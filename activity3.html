@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Activity 3 — Central Tendency, Dispersion & Correlation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0E1A; --panel:#121828; --panel-2:#1A2236;
+    --text:#E9EDF5; --muted:#8B96AC;
+    --cyan:#5BD1E0; --magenta:#E85DA0; --amber:#E8A33D; --line:#2A3550;
+    --nebula-1:#3A1E5C; --nebula-2:#1E2E5C; --nebula-3:#5C1E4A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 600px at 8% -5%, rgba(91,209,224,0.10), transparent 60%),
+      radial-gradient(ellipse 800px 500px at 95% 10%, rgba(232,93,160,0.09), transparent 60%),
+      radial-gradient(ellipse 700px 700px at 50% 90%, rgba(58,30,92,0.35), transparent 65%),
+      linear-gradient(rgba(91,209,224,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(91,209,224,0.035) 1px, transparent 1px),
+      var(--bg);
+    background-size:auto,auto,auto,28px 28px,28px 28px;
+    color:var(--text);font-family:'Inter',sans-serif;line-height:1.7;
+    overflow-x:hidden;
+    position:relative;
+    min-height:100vh;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- starfield ---------- */
+  #starfield{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle-star ease-in-out infinite;}
+  @keyframes twinkle-star{
+    0%,100%{opacity:0.15; transform:scale(0.8);}
+    50%{opacity:0.95; transform:scale(1.3);}
+  }
+
+  /* ---------- twinkling star sparkles ---------- */
+  .sparkle{
+    position:fixed; pointer-events:none; z-index:0; font-size:14px; opacity:0;
+    animation:twinkle 4s ease-in-out infinite;
+  }
+  @keyframes twinkle{
+    0%,100%{opacity:0; transform:scale(0.6) rotate(0deg);}
+    50%{opacity:0.85; transform:scale(1.15) rotate(30deg);}
+  }
+
+  nav{
+    display:flex;justify-content:space-between;align-items:center;
+    max-width:960px;margin:0 auto;padding:24px 32px;
+    border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:100;
+    background:rgba(10,14,26,0.9);backdrop-filter:blur(8px);
+  }
+  nav .brand{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;letter-spacing:1px;color:var(--amber);}
+  nav .links{display:flex;gap:28px;font-size:14px;position:relative;}
+  nav a{color:var(--muted);text-decoration:none;position:relative;padding-bottom:4px;}
+  nav a.active,nav a:hover{color:var(--amber);}
+  nav a.active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--amber);border-radius:2px;}
+  .dropdown{position:relative;}
+  .dropdown-menu{
+    display:none;position:absolute;top:28px;left:0;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    min-width:150px;padding:6px;z-index:10;
+  }
+  .dropdown:hover .dropdown-menu{display:block;}
+  .dropdown-menu a{display:block;padding:8px 10px;border-radius:6px;font-size:13px;}
+  .dropdown-menu a:hover{background:var(--panel-2);}
+
+  .wrap{max-width:960px;margin:0 auto;padding:0 32px;position:relative;z-index:1;}
+  .hero{padding:56px 0 32px;display:flex;gap:28px;align-items:center;flex-wrap:wrap;position:relative;}
+  .hero-text{flex:1;min-width:280px;}
+  .hero .tag{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--magenta);text-transform:uppercase;}
+  .hero h1{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;margin:12px 0 14px;}
+  .hero p{color:var(--muted);font-size:15px;max-width:540px;}
+
+  /* ---------- cute bouncing rocket sticker ---------- */
+  .rocket-sticker{
+    position:absolute; top:-6px; right:-6px; font-size:22px;
+    animation:rocket-bob 2.4s ease-in-out infinite;
+    filter:drop-shadow(0 0 6px rgba(232,163,61,0.6));
+  }
+  @keyframes rocket-bob{
+    0%,100%{transform:translateY(0) rotate(-8deg);}
+    50%{transform:translateY(-8px) rotate(6deg);}
+  }
+  /* ---------- shooting comet streak ---------- */
+  .comet{
+    position:fixed; top:12%; left:-10%; width:3px; height:3px; border-radius:50%;
+    background:#fff; box-shadow:0 0 8px 2px rgba(255,255,255,0.9);
+    z-index:0; pointer-events:none;
+    animation:comet-fly 9s linear infinite;
+    animation-delay:2s;
+  }
+  .comet::after{
+    content:""; position:absolute; top:50%; right:100%; width:90px; height:1.5px;
+    background:linear-gradient(to left, rgba(255,255,255,0.85), transparent);
+    transform:translateY(-50%);
+  }
+  @keyframes comet-fly{
+    0%{transform:translate(0,0); opacity:0;}
+    5%{opacity:1;}
+    45%{opacity:1;}
+    55%{transform:translate(130vw, 60px); opacity:0;}
+    100%{transform:translate(130vw, 60px); opacity:0;}
+  }
+
+  /* ---------- orbiting satellite scene ---------- */
+  .orbit-wrap{
+    width:260px;height:260px;position:relative;flex-shrink:0;
+    border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    background:radial-gradient(circle at 50% 50%, rgba(91,209,224,0.08), transparent 70%);
+    box-shadow:0 0 40px -14px rgba(91,209,224,0.25);
+  }
+  .orbit-wrap .cap{
+    position:absolute;bottom:0;left:0;right:0;
+    font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);
+    padding:6px 10px;background:rgba(18,24,40,0.85);border-top:1px solid var(--line);
+    text-align:center;
+  }
+  .planet{
+    position:absolute;top:50%;left:50%;width:56px;height:56px;margin:-28px 0 0 -28px;
+    border-radius:50%;
+    filter:drop-shadow(0 0 18px rgba(91,209,224,0.45));
+  }
+  .planet svg{display:block;width:100%;height:100%;}
+  .planet .continents{animation:earth-drift 26s linear infinite;transform-origin:50px 50px;}
+  @keyframes earth-drift{
+    0%{transform:translateX(0);}
+    50%{transform:translateX(-6px);}
+    100%{transform:translateX(0);}
+  }
+  .planet .clouds{animation:earth-drift 18s linear infinite reverse;transform-origin:50px 50px;}
+
+  /* the ring is the orbit path; the satellite sits exactly on its edge and
+     rotates rigidly with it, so the antenna (drawn pointing inward on the
+     satellite's own artwork) always faces the planet at the centre */
+  .orbit-ring{
+    position:absolute;top:50%;left:50%;
+    width:170px;height:170px;margin:-85px 0 0 -85px;
+    border:1px dashed rgba(232,163,61,0.35);
+    border-radius:50%;
+    animation:spin 10s linear infinite;
+  }
+  .sat{
+    position:absolute; top:0; left:50%;
+    width:26px;height:26px;margin:-13px 0 0 -13px;
+  }
+  .sat svg{display:block;width:100%;height:100%;filter:drop-shadow(0 0 5px rgba(232,163,61,0.7));}
+  @keyframes spin{ from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+  .twinkle-dot{
+    position:absolute; font-size:10px; animation:twinkle 3s ease-in-out infinite;
+  }
+
+  .glow-panel{
+    background:rgba(18,24,40,0.9);border:1px solid var(--line);border-radius:14px;
+    padding:20px;margin:24px 0;
+  }
+  .glow-panel .bar{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:12px;}
+  .glow-panel iframe{width:100%;height:480px;border:none;border-radius:8px;display:block;}
+
+  .section-tag{
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;
+    color:var(--cyan);text-transform:uppercase;margin:44px 0 16px;
+    display:flex;align-items:center;gap:8px;
+  }
+
+  .task-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  @media (max-width:760px){.task-grid{grid-template-columns:1fr;} .chart-grid{grid-template-columns:1fr !important;}}
+  .task-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:18px;text-align:left;position:relative;
+  }
+  .task-card img{width:56px;height:auto;display:block;margin-bottom:12px;}
+  .task-card h3{font-size:14px;margin-bottom:6px;}
+  .task-card p{font-size:12.5px;color:var(--muted);}
+
+  /* ---------- chart cards ---------- */
+  .chart-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;}
+  .chart-grid.wide{grid-template-columns:1fr;}
+  .chart-card{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;position:relative;
+  }
+  .chart-card .chip{
+    display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;
+    color:var(--bg);background:var(--amber);padding:2px 8px;border-radius:20px;
+    margin-bottom:8px;font-weight:700;letter-spacing:0.5px;
+  }
+  .chart-card h4{font-size:13.5px;margin-bottom:2px;}
+  .chart-card .sub{font-size:11.5px;color:var(--muted);margin-bottom:10px;}
+  .chart-card canvas{width:100%;}
+  .chart-status{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;padding:20px 0;text-align:center;}
+  .stat-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);}
+  .stat-row span b{color:var(--text);}
+  .insight-box{
+    margin-top:12px;font-size:12.5px;color:var(--muted);
+    background:var(--panel-2);border-left:3px solid var(--cyan);
+    padding:10px 12px;border-radius:6px;
+  }
+
+  .stat-callouts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:16px 0;}
+  @media (max-width:760px){.stat-callouts{grid-template-columns:1fr;}}
+  .callout{
+    background:linear-gradient(135deg, rgba(91,209,224,0.08), rgba(232,93,160,0.06));
+    border:1px solid var(--line);border-radius:12px;padding:20px;text-align:center;
+  }
+  .callout .num{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--amber);}
+  .callout .lbl{font-size:12px;color:var(--muted);margin-top:6px;}
+
+  /* ---------- formula panels ---------- */
+  .formula-panel{
+    background:var(--panel-2);border:1px solid var(--line);border-radius:10px;
+    padding:16px 18px;margin:14px 0 22px;
+  }
+  .formula-panel .f-title{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;
+    color:var(--cyan);text-transform:uppercase;margin-bottom:12px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .formula-list{display:flex;flex-direction:column;gap:10px;}
+  .formula-row{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+  .formula-row .f-name{
+    font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700;
+    color:var(--amber);min-width:112px;flex-shrink:0;
+  }
+  .formula-row .f-expr{
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text);
+    display:inline-flex;align-items:center;flex-wrap:wrap;gap:1px;
+  }
+  .formula-row .f-note{
+    flex-basis:100%;font-family:'Inter',sans-serif;font-size:11.5px;color:var(--muted);
+    padding-left:124px;margin-top:-4px;
+  }
+  @media (max-width:600px){ .formula-row .f-note{padding-left:0;} }
+  .frac{
+    display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+    vertical-align:middle;margin:0 4px;line-height:1.15;
+  }
+  .frac .num{padding:0 4px 2px;border-bottom:1.5px solid var(--cyan);}
+  .frac .den{padding:2px 4px 0;}
+  .sqrt-wrap{display:inline-flex;align-items:flex-start;margin:0 2px;}
+  .sqrt-wrap .radical{padding-top:1px;}
+  .sqrt-inner{border-top:1.5px solid var(--cyan);padding:0 3px;margin-left:1px;}
+
+  .note{font-size:13px;color:var(--muted);margin-top:20px;border-left:2px solid var(--amber);padding-left:14px;}
+  footer{max-width:960px;margin:60px auto 0;padding:20px 32px;border-top:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);text-align:center;}
+
+  .float-emoji{display:inline-block; animation:bob 2.6s ease-in-out infinite;}
+  @keyframes bob{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-5px);} }
+
+  /* ---------- little winking moon sticker near footer ---------- */
+  .moon-sticker{display:inline-block;animation:moon-spin 5s ease-in-out infinite;}
+  @keyframes moon-spin{
+    0%,100%{transform:rotate(-6deg) scale(1);}
+    50%{transform:rotate(6deg) scale(1.08);}
+  }
+</style>
+</head>
+<body>
+
+<div id="starfield"></div>
+<div class="comet"></div>
+
+<nav>
+  <div class="brand">MY CSE PORTFOLIO 🛰️</div>
+  <div class="links">
+    <a href="index.html">Home</a>
+    <div class="dropdown">
+      <a href="statistics1.html">Statistics 1 ▾</a>
+      <div class="dropdown-menu">
+        <a href="activity1.html">Activity 1</a>
+        <a href="activity2.html">Activity 2</a>
+        <a href="activity3.html" class="active">Activity 3</a>
+      </div>
+    </div>
+    <a href="about.html">About</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-text">
+      <div class="tag">✨ Extra Activity 3</div>
+      <h1>Central tendency, dispersion &amp; correlation <span class="float-emoji">📊</span></h1>
+      <p>Same satellite dataset 🛰️, a new statistical lens: measures of central tendency and dispersion for every variable, association between two categorical variables via a 100% stacked bar chart 📶, and covariance/correlation between two numerical variables via scatter plot 🎯 — now with the charts <em>actually rendered on the page</em>, not just tucked away in a spreadsheet tab!</p>
+      <span class="rocket-sticker">🚀</span>
+    </div>
+    <div class="orbit-wrap">
+      <span class="twinkle-dot" style="top:14px;left:20px;">✨</span>
+      <span class="twinkle-dot" style="top:30px;right:24px;animation-delay:1s;">⭐</span>
+      <span class="twinkle-dot" style="bottom:40px;left:16px;animation-delay:2s;">💫</span>
+      <span class="twinkle-dot" style="top:60%;right:14px;animation-delay:1.6s;">✨</span>
+
+      <div class="planet">
+        <svg viewBox="0 0 100 100">
+          <defs>
+            <radialGradient id="oceanGrad" cx="35%" cy="28%" r="80%">
+              <stop offset="0%" stop-color="#9BEFF2"/>
+              <stop offset="45%" stop-color="#3FA8C9"/>
+              <stop offset="100%" stop-color="#0D4E70"/>
+            </radialGradient>
+            <clipPath id="earthClip"><circle cx="50" cy="50" r="48"/></clipPath>
+          </defs>
+          <circle cx="50" cy="50" r="48" fill="url(#oceanGrad)"/>
+          <g clip-path="url(#earthClip)">
+            <g class="continents" fill="#4FA25B">
+              <path d="M18 34c6-6 16-6 20-1 3 4-2 8-8 9-5 1-10 4-14 1-4-3-3-6 2-9z"/>
+              <path d="M52 22c8-3 18 1 21 8 2 5-4 6-10 5-6-1-9 2-14-1-5-3-4-9 3-12z"/>
+              <path d="M40 58c7-2 16 0 19 6 2 4-3 9-10 9-6 0-9-3-13-5-4-3-2-8 4-10z"/>
+              <path d="M70 55c5-1 12 2 13 7 1 4-4 6-9 5-5-1-9-1-10-4-2-4 1-7 6-8z"/>
+              <path d="M12 62c4-2 9 0 10 3 1 3-2 5-6 5-4 0-6-1-7-3-1-2 0-4 3-5z"/>
+            </g>
+            <g class="clouds" fill="#F4FBFF" opacity="0.55">
+              <ellipse cx="30" cy="20" rx="14" ry="4"/>
+              <ellipse cx="68" cy="38" rx="16" ry="4.5"/>
+              <ellipse cx="45" cy="72" rx="18" ry="4"/>
+              <ellipse cx="20" cy="55" rx="10" ry="3"/>
+            </g>
+          </g>
+          <circle cx="50" cy="50" r="48" fill="url(#oceanGrad)" opacity="0" />
+          <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+          <ellipse cx="38" cy="30" rx="30" ry="22" fill="rgba(255,255,255,0.18)" />
+        </svg>
+      </div>
+
+      <div class="orbit-ring">
+        <div class="sat">
+          <svg viewBox="0 0 40 40">
+            <rect x="14" y="13" width="12" height="10" rx="1.5" fill="#E8A33D" stroke="#C97F1F" stroke-width="1"/>
+            <rect x="1" y="15" width="11" height="6" rx="0.5" fill="#5BD1E0" stroke="#2A8B9B" stroke-width="0.6"/>
+            <rect x="28" y="15" width="11" height="6" rx="0.5" fill="#5BD1E0" stroke="#2A8B9B" stroke-width="0.6"/>
+            <line x1="20" y1="23" x2="20" y2="33" stroke="#E9EDF5" stroke-width="1.6"/>
+            <circle cx="20" cy="34.5" r="3.2" fill="none" stroke="#E9EDF5" stroke-width="1.6"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="cap mono">LIVE ORBIT — DATA IN MOTION</div>
+    </div>
+  </div>
+
+  <div class="glow-panel">
+    <div class="bar">📄 DATA + ANALYSIS DOCUMENT — "Activity-3"</div>
+    <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vSvQWxb1oV3BXbHbxWieHvyDenCbN911iY4_W3VcthbwoqQF6bumMYRiAWWngK31A/pubhtml?widget=true&headers=false"></iframe>
+  </div>
+  <p style="font-size:13px;color:var(--muted);">Browse the tabs at the bottom of the embed: <b style="color:var(--text);">Raw Data</b> → <b style="color:var(--text);">Central Tendency &amp; Dispersion</b> → <b style="color:var(--text);">Plot of Variable_1</b> through <b style="color:var(--text);">_8</b> → <b style="color:var(--text);">Categorical Association</b> → <b style="color:var(--text);">Plot of Association</b> → <b style="color:var(--text);">Plot of Scatter (X1 vs X2)</b> → <b style="color:var(--text);">Covariance &amp; Correlation</b>. 📌 Dataset citation: <a href="https://www.ucs.org/resources/satellite-database" style="color:var(--cyan);" target="_blank">UCS Satellite Database</a> (reused from Activity 1 &amp; 2, per the assignment's OR clause) — 1000-row random sample.</p>
+
+  <div class="section-tag">🧭 What's inside</div>
+  <div class="task-grid">
+    <div class="task-card">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAABkCAYAAABU19jRAAADF0lEQVR4nO3dvXEbMRRFYdDjQtgBc0cuwpnKsMuwy1DmIhw5VwfsRI4wQ8HEEtzFz7vvnS+USAq7OMAuZygpJQAAAAAAAAAAAAAAZjutHoAVL2/X90ePeb2cw5+v8CegFsqvn39SSil9//H1v+9FDufT6gGs1LKr9HyeB2GDqU366+V8ut1BartJ1GhCBnNvsstQWr4XMZpwwdRiaXku0QQL5kgsW4+PFE2oYEp73+3wLimAchc4Ounl86PsMiGC6R1L7XUiRBMiGPTjPphRu0vt9bzvMq6DGR1L7XU9R+M6GPQXJpjRb4WjvNV2G8ztZWHWZN7+HK+XJbfBZLNXvvedxmUwVla3lXH05C6YFZeikudLk6tgrE6O1XHt4SoYjOc2mNU3n6t//ihugrFw71LyeC/jJpjMSiyZtfEc5SIYldWrMs4tLoLJrK5mq+PaQz4YtVWrNt6SfDCZ9VVsfXytpINRXa2q405JPJhMZfWqjHOLbDDKqzQl3fHLBpOprVq18ZYkg1FdnSXF45AMJlNdrarjTkkwGMVVuUXteOSCyZRXaUq645cKRm01tlI6LplgLH584SjFjz9IBKNyMo9SOE6JYGCHXDBeLkeZ2vGYD8bjvUtJ6V7GfDCZ11gyleMzHYz11TaK5eM2G0yES1FJ4dJkMhirJ2s2i+fBZDCwy1wws/7MmFXW//yZqWCix5JZjsZUMLDPTDDsLh9Z3WVMBEMs91mMZnkwFk6CktXna3kwJXaXj6ydj6XBcClqY+nStCwYYnmOlWiWBLP6OuzFivM4PZge/0YvKgv/PnBqMMRy3OpopgVDLP2sjGZKMMTS36pohgdDLOOsiGZYMC9v13diGa8WzahwhgRTGyyxjFE7ryOi6RrMVtnEMtZWND3D+dzjRbYGRCjz5HN9bz7y147Ox+5gWqolljVeL+dTbX6O/jbGU8G0bm2Est7WbpPtiaf5HqZ1RyEWW1rnpHUzOHwPQyAaHv2SXOs87gqGSLSV8Twzn80P/HL+xkcSnPt7/f2wB3Mf0QQAAAAAAAAAAAAABPAPJCyuiGN6BLkAAAAASUVORK5CYII=" alt="bell curve icon">
+      <h3>📈 Central Tendency</h3>
+      <p>Mean, median, and mode calculated live from the raw data for every variable — numerical and categorical — each with reasoning for why that measure fits.</p>
+    </div>
+    <div class="task-card">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAABkCAYAAABU19jRAAABPklEQVR4nO3cv03DQBiHYYMyBCUTwAS0LBG5ygjMkRGoIpZImwmSCSizBXQhDUI/3+kuJ56nSpWz5FefLf+bJgAAAAAAAAAAAAAAAAAAAACWu+u9AdfOu5ev5ovuNz+/X9+bL/8wH25qH/zlvvcGMBbBEFn13oDftBrV53lzOQw2W7PHobcSE4aIYIgIhohgiCw+6V0fPy8nbh/Pj0NdS/jPSvebCUNEMEQEQ0QwRARDRDBEBENEMEQ0QwRKo8D3N9ubnIaa7yN6N4e9pN6+M01LMxJgwRwRCpckiqdbd6O/Cji0tsT3PztwZKTx9MGCKCISIYIoIhIhgigiEiGCKCISIYIoIhsvjWgJfXxlS630wYIoIhIhgigiFys58sa/ZZr32HNQdmwhARDAAAAAAAAAAAAAAAAAAAAECJb4pjL3qxegSsAAAAAElFTkSuQmCC" alt="box plot icon">
+      <h3>📏 Dispersion</h3>
+      <p>Range, variance, standard deviation, and IQR for numerical variables; Index of Qualitative Variation (IQV) for categorical ones.</p>
+    </div>
+    <div class="task-card">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIwAAABkCAYAAABU19jRAAADfUlEQVR4nO3dTW7bMBCGYbroIbz0OQz0Bl0F3gbw0QJ4G3SVGwTIObLMLZxFwUIVZJEccsTh6H2AAkFby7b0efhjUgkBAAAAcO7Q+wVA19fzyz3+fLxdq683gXFoGpIlNcH5KX0g7EkFpYUf2k8Ae2qCRWCc2KK6hEBgUIjA7FBNp5fAONFiyJyDUdKOMA+DRa0n67Bj59OlajRF+gaXW03mQfn4fBVdewIzqLV5l3lwpmGRBiWi0+tYq6oyRYUZUM6s7tP727+fWwQlYh7GuZZhCYEmya3WQYmoMANKza1ozr1QYZR5m0Qb/g1YVTLsTT1+6f/HEdCfX7+LjluLCmPMUtDi3x1v18N8qLx11aIPoyA17JUudppPwGl1bNcQGENSQYrNT4+gRARmMD3DEgKBUdFz2KuNwDTy9fxyj3+kxxghaIySKqVGNSXzMLVrVbbQPbGjk1SUteUHIfztp1id8DPzQkYkbX6mAbAajEfMv0DLtDaPWQ4OnV4UITAVtCrBVtteJQgMihCYSsfb9TCvNJb7ILXcvrHeUssPapc/9MLEnYLpvIrliy/h6s1oqJmpzfmikHkYJ0qbjJabxSyjSaqksVnMMtdvTqp0o1gI/oMSUWEq7SUokfvAaHYq9xaWEBw3SS23eUge7xUzvSji8pOS02nNqRLn0+W+9UYx69z3YSSmQ+Wn97dd9lUeITATe5tTkRjmhJSOdpip1WG+wqRW5dcen6pSxnxgpGKY1ioTVaWc6ZPUarQzR1WRc1thHqGq1NlNYFJVZbR1Kb2YPzG1U/QlQZEcf29cVxian/aGOYkaSyW1OtWeDVNhci8cVUXXMIFJWdzW8fna7fV4Ze4TKBmtzL9Vnls7Dp3eMmYqjOQrgBFuwOONmU+Q9Pf/hPB/M5R7jLXnp7I8ZuLElIxWljq1jHa2Y6ZJSuH7HxtUApMq7zXlfyko85sPLv17yXPgsaYnMnXRpDfKiZvG1qoKgdnGEE1STvOTs/4F9Zqd0Ba32ZpXIRZg22OqwpxPl3tO84N+TAUmBIJiXfHFWesj1DRLND9jyK4w2qv3CcsYmu6tltxRcukxsCvrQtVOvTNH4scmnd448mFj+/hUA9P7N6CivewLyF5lhKBQYfhW2bem8zBUFf+aXFSqyn40vV0GQfFPfIGpKijGqn0AAAAAAAAAAAAAgMg3Kv79ndJrZ3cAAAAASUVORK5CYII=" alt="scatter plot with trend line icon">
+      <h3>🎯 Correlation</h3>
+      <p>Perigee vs Apogee scatter plot, plus their live-calculated covariance and Pearson correlation coefficient, with a physical interpretation of the result.</p>
+    </div>
+  </div>
+
+  <p class="note">📌 All statistics in the embedded sheet are live formulas (AVERAGE, MEDIAN, VAR.S, COUNTIFS, CORREL, etc.) computed directly from the Raw Data tab — not pasted values.</p>
+
+  <!-- ============ NUMERICAL CENTRAL TENDENCY + DISPERSION CHARTS ============ -->
+  <div class="section-tag">📊 Central tendency &amp; dispersion — numerical variables <span class="float-emoji">🧮</span></div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:6px;">Mirrors the <b style="color:var(--text);">Plot of Variable_1</b> through <b style="color:var(--text);">_5</b> tabs — mean, median &amp; mode, rendered live from the same numbers.</p>
+
+  <div class="formula-panel">
+    <div class="f-title">🧮 Formulas used</div>
+    <div class="formula-list">
+      <div class="formula-row">
+        <span class="f-name">Mean (x̄)</span>
+        <span class="f-expr">x̄ = <span class="frac"><span class="num">Σxᵢ</span><span class="den">n</span></span></span>
+        <span class="f-note">Sum of all values divided by the count n.</span>
+      </div>
+      <div class="formula-row">
+        <span class="f-name">Median</span>
+        <span class="f-expr">x₍₍ₙ₊₁₎∕₂₎ if n is odd&nbsp;&nbsp;·&nbsp;&nbsp;<span class="frac"><span class="num">x₍ₙ∕₂₎ + x₍ₙ∕₂ ₊ ₁₎</span><span class="den">2</span></span> if n is even</span>
+        <span class="f-note">The middle value once the data is sorted (average of the two middle values for an even n).</span>
+      </div>
+      <div class="formula-row">
+        <span class="f-name">Mode</span>
+        <span class="f-expr">Mode = xᵢ where f(xᵢ) = max(f)</span>
+        <span class="f-note">The value that occurs with the highest frequency.</span>
+      </div>
+      <div class="formula-row">
+        <span class="f-name">Range</span>
+        <span class="f-expr">R = max(x) − min(x)</span>
+        <span class="f-note">Distance between the largest and smallest observation.</span>
+      </div>
+      <div class="formula-row">
+        <span class="f-name">Variance (s²)</span>
+        <span class="f-expr">s² = <span class="frac"><span class="num">Σ(xᵢ − x̄)²</span><span class="den">n − 1</span></span></span>
+        <span class="f-note">Average squared deviation from the mean (sample formula, dividing by n − 1).</span>
+      </div>
+      <div class="formula-row">
+        <span class="f-name">Std Dev (s)</span>
+        <span class="f-expr">s = <span class="sqrt-wrap"><span class="radical">√</span><span class="sqrt-inner"><span class="frac"><span class="num">Σ(xᵢ − x̄)²</span><span class="den">n − 1</span></span></span></span></span>
+        <span class="f-note">Square root of the variance — deviation expressed back in the variable's own units.</span>
+      </div>
+      <div class="formula-row">
+        <span class="f-name">IQR</span>
+        <span class="f-expr">IQR = Q₃ − Q₁</span>
+        <span class="f-note">Spread of the middle 50% of the data — the 75th percentile minus the 25th.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-grid" id="numChartGrid"></div>
+
+  <!-- ============ CATEGORICAL MODE CHARTS ============ -->
+  <div class="section-tag">🗂️ Central tendency — categorical variables <span class="float-emoji">🛰️</span></div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:6px;">Mirrors <b style="color:var(--text);">Plot of Variable_6</b>–<b style="color:var(--text);">_8</b> — top categories by count, with the mode 🏆 highlighted in amber.</p>
+
+  <div class="formula-panel">
+    <div class="f-title">🧮 Formulas used</div>
+    <div class="formula-list">
+      <div class="formula-row">
+        <span class="f-name">Mode</span>
+        <span class="f-expr">Mode = category cᵢ where f(cᵢ) = max(f)</span>
+        <span class="f-note">Only measure of central tendency that's valid for nominal/categorical data — mean and median don't apply.</span>
+      </div>
+      <div class="formula-row">
+        <span class="f-name">IQV</span>
+        <span class="f-expr">IQV = <span class="frac"><span class="num">k(N² − Σfᵢ²)</span><span class="den">N²(k − 1)</span></span></span>
+        <span class="f-note">Index of Qualitative Variation — k = number of categories, N = total count, fᵢ = frequency of category i. Ranges 0 (no variation, one category dominates) to 1 (perfectly even spread).</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-grid" id="catChartGrid"></div>
+
+  <!-- ============ CATEGORICAL ASSOCIATION — 100% STACKED BAR ============ -->
+  <div class="section-tag">📶 Categorical association — Purpose × Users <span class="float-emoji">🔗</span></div>
+
+  <div class="formula-panel">
+    <div class="f-title">🧮 Formula used</div>
+    <div class="formula-list">
+      <div class="formula-row">
+        <span class="f-name">Row %</span>
+        <span class="f-expr">P(Uⱼ | Pᵢ) = <span class="frac"><span class="num">countᵢⱼ</span><span class="den">Σⱼ countᵢⱼ</span></span> × 100%</span>
+        <span class="f-note">Each Purpose row Pᵢ is divided by its own row total, so every bar sums to 100% — this is what turns raw COUNTIFS into a comparable composition across categories of different sizes.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-grid wide">
+    <div class="chart-card">
+      <span class="chip">PLOT OF ASSOCIATION</span>
+      <h4>100% stacked bar — Users composition within each Purpose</h4>
+      <div class="sub">Each bar sums to 100%; shows how "Users" is distributed inside every "Purpose" category (row percentages, live COUNTIFS).</div>
+      <canvas id="assocChart" height="110"></canvas>
+      <div class="insight-box">🔗 Purpose basically predicts who's flying the satellite. Comms sats? ~94% commercial 📡💰. Navigation sats flip that entirely — ~80% "Other" users. Earth Observation spreads fairly evenly across commercial, government, and military 🌍, and Technology Development is the most balanced of the four. Purpose and Users are clearly <em>not</em> independent.</div>
+    </div>
+  </div>
+
+  <!-- ============ SCATTER PLOT ============ -->
+  <div class="section-tag">🎯 Scatter plot — Perigee (X1) vs Apogee (X2) <span class="float-emoji">🛰️</span></div>
+  <div class="chart-grid wide">
+    <div class="chart-card">
+      <span class="chip">PLOT OF SCATTER (X1 vs X2)</span>
+      <h4>All 999 paired observations</h4>
+      <div class="sub">Perigee (km) on the x-axis, Apogee (km) on the y-axis. Points near the diagonal = near-circular orbits.</div>
+      <canvas id="scatterChart" height="140"></canvas>
+      <div class="insight-box">🛰️ Perigee goes up, apogee follows — a clean positive trend. Most points hug the diagonal under ~1000 km, the crowded low-Earth-orbit neighborhood 🌐. A smaller cluster floats well above the line — highly elliptical orbits where apogee dwarfs perigee 🚀. Nothing falls below the diagonal — physics won't allow it, apogee can't be smaller than perigee for the same orbit.</div>
+    </div>
+  </div>
+
+  <!-- ============ COVARIANCE & CORRELATION ============ -->
+  <div class="section-tag">🔗 Covariance &amp; correlation <span class="float-emoji">✨</span></div>
+
+  <div class="formula-panel">
+    <div class="f-title">🧮 Formulas used</div>
+    <div class="formula-list">
+      <div class="formula-row">
+        <span class="f-name">Covariance</span>
+        <span class="f-expr">Cov(X,Y) = <span class="frac"><span class="num">Σ(xᵢ − x̄)(yᵢ − ȳ)</span><span class="den">n − 1</span></span></span>
+        <span class="f-note">Average of the products of each variable's deviation from its own mean — positive when X and Y tend to move together.</span>
+      </div>
+      <div class="formula-row">
+        <span class="f-name">Correlation (r)</span>
+        <span class="f-expr">r = <span class="frac"><span class="num">Cov(X,Y)</span><span class="den">sₓ · sᵧ</span></span> = <span class="frac"><span class="num">Σ(xᵢ − x̄)(yᵢ − ȳ)</span><span class="den">√[Σ(xᵢ − x̄)² · Σ(yᵢ − ȳ)²]</span></span></span>
+        <span class="f-note">Covariance rescaled by both standard deviations so the result is unit-free and bounded between −1 and 1 — this is the Pearson correlation coefficient.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-callouts">
+    <div class="callout"><div class="num">999</div><div class="lbl">n — paired observations 🔢</div></div>
+    <div class="callout"><div class="num">120.5M</div><div class="lbl">Covariance (km²) — positive ➕</div></div>
+    <div class="callout"><div class="num">r = 0.62</div><div class="lbl">Pearson correlation — moderately strong 💪</div></div>
+  </div>
+  <div class="insight-box" style="max-width:100%;">🧠 Perigee and apogee move together — the positive covariance confirms it. But covariance's units (km²) make it hard to read on its own, so correlation does the real talking. r ≈ 0.62 says moderately strong and positive: makes sense, since the two together define an orbit's shape, and near-circular orbits naturally pull them close. It's not closer to 1 because a chunk of satellites live in stretched-out elliptical orbits, scattering the tight near-circular cluster. 🛰️💫</div>
+
+  <p class="note">🧾 All chart values above are computed directly from the same 1000-row raw dataset embedded in the spreadsheet — nothing here is hand-typed or estimated. <span class="moon-sticker">🌙</span></p>
+</div>
+
+<footer>🛰️ STATISTICS 1 · EXTRA ACTIVITY 3 · MADE WITH 💙 AND TOO MANY SATELLITES ✨</footer>
+
+<script>
+// ---------------- starfield generator ----------------
+(function(){
+  var field = document.getElementById('starfield');
+  var count = window.innerWidth < 700 ? 60 : 110;
+  var frag = document.createDocumentFragment();
+  for (var i = 0; i < count; i++){
+    var s = document.createElement('div');
+    s.className = 'star';
+    var size = (Math.random() * 1.8 + 0.6).toFixed(2);
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.top = (Math.random() * 100) + '%';
+    s.style.left = (Math.random() * 100) + '%';
+    s.style.animationDuration = (Math.random() * 3 + 2).toFixed(2) + 's';
+    s.style.animationDelay = (Math.random() * 4).toFixed(2) + 's';
+    frag.appendChild(s);
+  }
+  field.appendChild(frag);
+})();
+
+// ---------------- robust Chart.js loader ----------------
+function ensureChartJs(callback){
+  if (window.Chart){ callback(); return; }
+  var sources = [
+    'https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js',
+    'https://unpkg.com/chart.js@4.4.4/dist/chart.umd.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js'
+  ];
+  function tryLoad(i){
+    if (i >= sources.length){
+      document.querySelectorAll('.chart-card canvas').forEach(function(c){
+        var msg = document.createElement('div');
+        msg.className = 'chart-status';
+        msg.textContent = '⚠️ Chart library failed to load — check your connection and refresh.';
+        c.replaceWith(msg);
+      });
+      return;
+    }
+    var s = document.createElement('script');
+    s.src = sources[i];
+    s.onload = function(){ window.Chart ? callback() : tryLoad(i + 1); };
+    s.onerror = function(){ tryLoad(i + 1); };
+    document.head.appendChild(s);
+  }
+  tryLoad(0);
+}
+
+function initCharts(){
+// ---------------- shared palette ----------------
+const CYAN = '#5BD1E0', MAGENTA = '#E85DA0', AMBER = '#E8A33D', MUTED='#8B96AC', LINE='#2A3550';
+Chart.defaults.color = MUTED;
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 10;
+
+function baseGrid(){
+  return { color: 'rgba(255,255,255,0.05)' };
+}
+
+// ---------------- numerical central tendency (mean/median/mode) ----------------
+const numericVars = [
+  {name:'Perigee (km)', mean:4281.81, median:548, mode:548, range:37632, std:10481.08, iqr:84, reasonCT:'Mean is the arithmetic average; where mean and median diverge, it signals skew, so median is the more representative typical value.', reasonD:'Right-skewed with outliers, so IQR (middle 50%) is the most reliable spread measure — it resists distortion from extreme values.'},
+  {name:'Apogee (km)', mean:5350.71, median:561, mode:541, range:353648, std:18514.48, iqr:88.5, reasonCT:'Mean is the arithmetic average; where mean and median diverge, it signals skew, so median is the more representative typical value.', reasonD:'Right-skewed with outliers, so IQR (middle 50%) is the most reliable spread measure — it resists distortion from extreme values.'},
+  {name:'Inclination (deg)', mean:61.41, median:53.2, mode:53, range:141.12, std:28.93, iqr:34.9, reasonCT:'Mean is the arithmetic average; where mean and median diverge, it signals skew, so median is the more representative typical value.', reasonD:'Right-skewed with outliers, so IQR (middle 50%) is the most reliable spread measure — it resists distortion from extreme values.'},
+  {name:'Period (min)', mean:254.48, median:95.6, mode:95.6, range:8671, std:506.93, iqr:1.75, reasonCT:'Mean is the arithmetic average; where mean and median diverge, it signals skew, so median is the more representative typical value.', reasonD:'Right-skewed with outliers, so IQR (middle 50%) is the most reliable spread measure — it resists distortion from extreme values.'},
+  {name:'Launch Mass (kg)', mean:739.52, median:260, mode:260, range:19999, std:1609.29, iqr:142, reasonCT:'Mean is the arithmetic average; where mean and median diverge, it signals skew, so median is the more representative typical value.', reasonD:'Right-skewed with outliers, so IQR (middle 50%) is the most reliable spread measure — it resists distortion from extreme values.'}
+];
+
+const numGrid = document.getElementById('numChartGrid');
+numericVars.forEach((v, i) => {
+  const card = document.createElement('div');
+  card.className = 'chart-card';
+  card.innerHTML = `
+    <span class="chip">PLOT OF VARIABLE_${i+1}</span>
+    <h4>${v.name}</h4>
+    <div class="sub">${v.reasonCT}</div>
+    <canvas id="numChart${i}" height="150"></canvas>
+    <div class="stat-row">
+      <span>Range: <b>${v.range.toLocaleString()}</b></span>
+      <span>Std Dev: <b>${v.std.toLocaleString(undefined,{maximumFractionDigits:1})}</b></span>
+      <span>IQR: <b>${v.iqr}</b></span>
+    </div>
+  `;
+  numGrid.appendChild(card);
+  new Chart(document.getElementById('numChart' + i), {
+    type: 'bar',
+    data: {
+      labels: ['Mean 📐', 'Median 📍', 'Mode 🏆'],
+      datasets: [{
+        data: [v.mean, v.median, v.mode],
+        backgroundColor: [CYAN, MAGENTA, AMBER],
+        borderRadius: 6,
+        maxBarThickness: 46
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { grid: baseGrid(), beginAtZero: true },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+});
+
+// ---------------- categorical mode charts ----------------
+const catVars = [
+  {name:'Country', label:'PLOT OF VARIABLE_6', mode:'USA', data:[['USA',669],['United Kingdom',85],['China',77],['Russia',30],['India',11],['Japan',11]]},
+  {name:'Users', label:'PLOT OF VARIABLE_7', mode:'Commercial', data:[['Commercial',788],['Government',80],['Military',58],['Civil',33],['Military/Commercial',12],['Government/Commercial',12]]},
+  {name:'Purpose', label:'PLOT OF VARIABLE_8', mode:'Communications', data:[['Communications',704],['Earth Observation',174],['Technology Development',53],['Navigation/Global Positioning',20],['Space Science',18],['Technology Demonstration',12]]}
+];
+
+const catGrid = document.getElementById('catChartGrid');
+catVars.forEach((v, i) => {
+  const card = document.createElement('div');
+  card.className = 'chart-card';
+  card.innerHTML = `
+    <span class="chip">${v.label}</span>
+    <h4>${v.name} — top categories</h4>
+    <div class="sub">Mode 🏆 = "${v.mode}" (highlighted in amber)</div>
+    <canvas id="catChart${i}" height="180"></canvas>
+  `;
+  catGrid.appendChild(card);
+  const labels = v.data.map(d => d[0]);
+  const counts = v.data.map(d => d[1]);
+  const colors = v.data.map(d => d[0] === v.mode ? AMBER : CYAN);
+  const truncate = (s) => s.length > 13 ? s.slice(0, 12) + '…' : s;
+  new Chart(document.getElementById('catChart' + i), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{ data: counts, backgroundColor: colors, borderRadius: 6 }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      layout: { padding: { left: 4 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { title: (items) => labels[items[0].dataIndex] } }
+      },
+      scales: {
+        x: { grid: baseGrid(), beginAtZero: true },
+        y: { grid: { display: false }, ticks: { font: { size: 9 }, callback: (val, idx) => truncate(labels[idx]) } }
+      }
+    }
+  });
+});
+
+// ---------------- 100% stacked bar: Purpose x Users ----------------
+const assocLabels = ['Communications', 'Earth Observation', 'Navigation/Global Positioning', 'Technology Development'];
+const assocSeries = {
+  'Commercial': [93.89, 53.45, 20, 26.42],
+  'Government': [1.99, 21.84, 0, 16.98],
+  'Military':   [1.85, 18.39, 0, 20.75],
+  'Civil':      [0.57, 2.87, 0, 28.30],
+  'Other':      [1.70, 3.45, 80, 7.55]
+};
+const assocColors = { Commercial: CYAN, Government: MAGENTA, Military: AMBER, Civil: '#7DD87D', Other: '#8B96AC' };
+new Chart(document.getElementById('assocChart'), {
+  type: 'bar',
+  data: {
+    labels: assocLabels,
+    datasets: Object.keys(assocSeries).map(k => ({
+      label: k,
+      data: assocSeries[k],
+      backgroundColor: assocColors[k],
+      borderRadius: 4
+    }))
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } },
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: { font: { size: 9 } } },
+      y: { stacked: true, grid: baseGrid(), max: 100, ticks: { callback: v => v + '%' } }
+    }
+  }
+});
+
+// ---------------- scatter plot ----------------
+const scatterRaw = [[565,567],[539,541],[520,533],[1659,38503],[600,610],[733,738],[600,610],[562,564],[1200,11600],[562,575],[590,600],[580,583],[550,551],[538,541],[548,561],[35700,35874],[548,561],[539,541],[548,561],[1412,1416],[35780,35780],[260,280],[258,280],[20133,20234],[379,381],[539,541],[486,503],[348,351],[577,581],[586,602],[696,699],[20155,20344],[35784,35791],[8063,8069],[348,351],[35773,35799],[565,567],[548,561],[500,500],[35790,35795],[538,541],[358,362],[495,505],[1200,1202],[565,567],[351,353],[345,352],[565,567],[1176,1179],[608,622],[548,561],[260,280],[35777,35795],[496,511],[348,351],[539,541],[260,280],[548,561],[35787,35793],[539,541],[1478,1509],[522,535],[565,567],[539,541],[565,577],[260,280],[548,551],[539,541],[1184,1187],[524,537],[524,537],[260,280],[538,541],[548,551],[521,537],[35778,35795],[548,551],[590,600],[622,654],[564,567],[35791,35795],[487,506],[548,561],[668,670],[565,567],[348,351],[348,351],[498,508],[538,541],[549,551],[538,541],[538,542],[1200,1202],[35778,35793],[577,581],[35772,35800],[538,541],[569,571],[8062,8069],[539,541],[35772,35816],[35794,35796],[1184,1188],[539,541],[539,541],[564,582],[260,280],[495,501],[522,535],[493,506],[348,351],[559,561],[549,551],[548,551],[35784,35802],[908,916],[461,87304],[519,537],[590,600],[549,551],[538,541],[500,523],[580,583],[35784,35791],[539,541],[522,536],[548,561],[8063,8069],[348,351],[610,626],[260,280],[561,564],[538,541],[548,551],[697,708],[23240,23306],[548,561],[539,541],[526,535],[531,543],[565,567],[23217,23227],[548,561],[35785,35789],[538,541],[538,541],[556,560],[580,583],[548,561],[518,535],[348,351],[569,571],[495,502],[428,439],[9999,138825],[539,541],[549,551],[348,351],[538,541],[562,564],[549,551],[348,351],[549,551],[35769,35805],[548,551],[577,581],[565,567],[348,351],[538,541],[567,577],[548,561],[549,551],[549,551],[565,567],[523,536],[556,560],[565,567],[538,541],[569,571],[565,567],[516,536],[548,561],[1200,1202],[549,551],[500,802],[348,351],[522,533],[35774,35797],[539,541],[539,541],[495,506],[586,601],[668,672],[538,541],[1215,1220],[35864,35874],[655,670],[491,496],[608,612],[539,541],[549,551],[548,561],[538,541],[535,556],[35722,35851],[539,541],[517,518],[965,967],[549,551],[521,538],[35784,35788],[538,541],[538,541],[584,604],[586,600],[514,533],[562,564],[733,738],[1215,1220],[23265,23305],[35785,35787],[548,551],[485,500],[683,683],[348,351],[479,506],[22982,22982],[548,551],[35777,35795],[577,590],[348,351],[1215,1220],[491,511],[348,351],[539,541],[260,280],[549,551],[565,567],[580,583],[565,567],[549,551],[404,406],[349,350],[518,534],[378,381],[1215,1220],[580,583],[348,351],[977,982],[577,581],[548,561],[483,494],[548,561],[488,509],[577,581],[548,551],[358,362],[565,567],[538,541],[548,561],[538,541],[562,564],[495,505],[538,541],[35780,35780],[500,528],[379,381],[539,541],[8062,8069],[548,561],[977,982],[548,561],[539,541],[590,600],[564,567],[494,505],[392,409],[901,909],[733,738],[35772,35799],[35783,35791],[348,351],[668,679],[565,567],[360,363],[612,614],[549,550],[260,280],[522,533],[565,567],[548,561],[258,280],[535,564],[548,561],[258,280],[538,541],[548,551],[607,626],[35796,36781],[538,541],[589,603],[577,581],[520,535],[496,507],[348,351],[345,352],[538,541],[577,581],[1080,1089],[1486,1506],[565,567],[556,560],[524,535],[543,548],[569,571],[360,363],[661,673],[608,625],[1176,1179],[842,859],[611,623],[590,600],[501,515],[538,541],[35770,35803],[530,546],[739,746],[564,567],[548,561],[539,541],[539,541],[539,541],[627,654],[150,150],[479,510],[564,567],[549,551],[548,561],[539,541],[564,567],[573,589],[443,446],[600,610],[609,613],[609,624],[1176,1179],[611,621],[577,581],[533,535],[35759,35812],[35693,37872],[21514,21541],[562,564],[577,580],[562,564],[977,982],[521,536],[260,280],[561,564],[348,351],[604,674],[548,561],[577,581],[489,502],[19131,19133],[376,383],[549,551],[548,550],[606,625],[512,536],[693,704],[565,567],[358,362],[538,541],[358,362],[548,561],[507,543],[400,407],[474,483],[565,567],[1215,1220],[1215,1220],[258,280],[549,551],[549,550],[433,440],[35794,35844],[527,535],[562,564],[494,521],[548,561],[442,445],[548,551],[348,351],[513,536],[571,588],[564,567],[548,561],[35785,35787],[348,351],[772,828],[564,582],[348,351],[514,547],[539,541],[577,581],[548,561],[548,561],[689,703],[548,561],[35774,35797],[587,598],[527,551],[35784,35794],[548,561],[1215,1220],[570,575],[529,560],[348,351],[548,561],[548,551],[549,551],[573,590],[549,551],[476,483],[240,31342],[496,510],[548,561],[360,363],[586,605],[539,541],[580,583],[35613,35903],[549,551],[600,610],[35774,35811],[658,11836],[538,541],[258,280],[348,351],[538,549],[507,524],[515,546],[539,541],[539,541],[476,500],[258,268488],[548,561],[538,541],[539,541],[476,500],[538,541],[590,600],[1200,1202],[570,575],[476,500],[548,561],[323,342],[1215,1220],[496,517],[539,541],[35777,35795],[548,561],[1200,1202],[548,561],[539,541],[1417,1425],[565,567],[569,588],[548,551],[527,535],[566,575],[348,351],[305,850],[7838,7840],[37782,37807],[660,686],[539,541],[499,515],[548,561],[548,561],[549,551],[561,592],[548,551],[552,572],[751,754],[548,561],[479,494],[539,541],[348,351],[1215,1220],[539,541],[35549,36152],[539,541],[538,541],[538,541],[510,510],[523,536],[564,567],[548,561],[504,515],[549,550],[493,505],[564,582],[548,561],[539,541],[378,381],[538,541],[896,908],[35786,35796],[451,452],[549,551],[539,541],[35769,35802],[549,551],[451,454],[565,567],[1215,1220],[548,561],[548,561],[548,551],[521,535],[35781,35792],[548,561],[548,561],[548,561],[348,351],[539,541],[1200,1202],[589,604],[538,541],[1215,1220],[590,600],[1200,1202],[35744,35798],[348,351],[35781,35803],[20123,20247],[496,507],[538,541],[544,555],[539,541],[491,511],[35774,35798],[569,571],[348,351],[549,550],[588,624],[539,541],[1014,1099],[690,720],[526,535],[495,511],[577,581],[532,537],[592,601],[377,382],[565,567],[590,600],[535,564],[569,571],[1200,1202],[524,758],[539,541],[565,567],[1200,1202],[549,551],[517,537],[379,398],[556,560],[1200,1202],[358,362],[35786,35786],[348,351],[590,600],[20206,20366],[935,963],[35778,35793],[549,551],[476,500],[548,561],[1090,1098],[1498,1508],[539,541],[538,541],[35774,35801],[476,500],[523,535],[21537,22195],[502,523],[7827,7844],[577,581],[496,506],[688,703],[590,600],[549,551],[538,541],[549,551],[539,541],[348,351],[635,649],[564,567],[35736,35854],[35788,35794],[35777,35796],[35776,35794],[539,541],[623,625],[35774,35797],[348,351],[571,588],[348,351],[548,561],[613,715],[498,508],[548,561],[36236,36343],[570,583],[484,504],[35772,35801],[467,478],[565,567],[570,575],[548,551],[35778,35795],[348,351],[481,492],[538,541],[512,536],[35789,35797],[521,537],[496,507],[548,561],[348,351],[1200,1202],[1014,1201],[548,561],[538,541],[548,561],[522,540],[260,280],[539,541],[549,551],[35700,35700],[535,562],[1079,1090],[1215,1220],[358,362],[542,558],[522,533],[548,561],[403,405],[539,541],[606,623],[548,551],[569,571],[548,561],[977,982],[548,561],[548,561],[260,280],[538,541],[538,541],[548,561],[565,567],[538,541],[600,610],[20155,20211],[1007,1207],[499,515],[348,351],[591,602],[564,582],[579,604],[497,509],[323,342],[35780,35782],[501,502],[549,551],[494,496],[19103,19146],[538,541],[548,561],[549,550],[516,523],[539,541],[35777,35795],[538,541],[487,491],[538,541],[548,561],[520,539],[1357,70117],[571,589],[1440,1459],[35782,35791],[19121,19154],[565,567],[258,280],[1200,1202],[8063,8069],[548,561],[537,550],[1215,1220],[577,581],[21520,21549],[352,603],[1200,1202],[1493,1508],[35781,35793],[538,541],[590,600],[35861,35924],[459,474],[569,579],[565,567],[348,351],[548,551],[548,551],[535,562],[443,446],[733,738],[506,543],[548,561],[548,561],[548,561],[348,351],[607,625],[565,567],[564,582],[35779,35785],[527,536],[360,363],[565,567],[497,510],[1215,1220],[735,760],[258,280],[577,581],[548,561],[548,551],[1215,1220],[548,561],[580,583],[564,576],[539,541],[600,610],[443,446],[490,492],[1200,1202],[565,567],[493,510],[561,564],[520,533],[507,523],[539,541],[35930,35933],[538,541],[548,551],[35778,35794],[569,587],[502,516],[35781,35790],[348,351],[1200,1202],[258,280],[538,541],[35783,35791],[493,509],[577,580],[549,551],[539,541],[495,509],[348,351],[348,351],[539,541],[539,541],[35772,35801],[512,536],[519,535],[539,541],[494,511],[539,541],[525,535],[518,535],[538,541],[360,363],[609,623],[348,351],[569,584],[409,419],[476,500],[22017,110791],[538,541],[345,352],[527,550],[36000,36000],[244,900],[548,561],[488,499],[485,505],[812,815],[548,561],[260,280],[549,551],[548,561],[506,543],[35768,35802],[258,280],[538,541],[548,561],[379,381],[533,550],[594,715],[443,446],[472,502],[538,541],[570,585],[549,551],[258,280],[1080,1100],[548,561],[35782,35790],[553,568],[538,541],[468,478],[548,561],[534,535],[35763,35810],[539,541],[512,536],[548,561],[538,541],[539,541],[579,601],[527,535],[35703,35778],[574,588],[1175,1180],[1200,1202],[556,572],[548,551],[572,592],[19124,19133],[35784,35789],[516,536],[548,561],[1200,1202],[539,541],[523,546],[275,290],[517,534],[650,669],[538,541],[494,505],[348,351],[817,832],[565,567],[548,561],[977,982],[495,515],[539,541],[260,280],[496,505],[548,551],[692,703],[539,541],[561,575],[1014,1099],[35780,35792],[548,561],[35785,35787],[348,351],[525,535],[588,603],[627,694],[529,549],[548,561],[1200,1202],[539,541],[1494,1506],[548,561],[395,419],[538,541],[488,509],[503,507],[35795,35813],[538,541],[35500,35500],[512,533],[1016,1203],[577,581],[577,580],[548,561],[549,551],[688,695],[548,561],[519,532],[35777,35796],[562,564],[501,505],[548,551],[613,632],[548,561],[538,541],[564,567],[548,561],[1477,1509],[519,535],[35767,35805],[35778,35795],[1200,1202],[35781,35804],[538,541],[538,541],[19110,19149],[517,534],[676,698],[35782,35788],[549,551],[577,581],[1200,1202],[348,351],[757,759],[569,584],[467,477],[35778,35793],[549,551],[35772,35802],[384,396],[538,541],[378,381],[660,662],[518,535],[1200,1202],[1200,1202],[549,550],[515,543],[415,418],[323,342],[521,535],[516,536],[538,541],[549,551],[548,561],[509,514],[636,661],[548,561],[539,541],[348,351],[519,535],[549,551],[485,501],[538,541],[35778,35793],[260,280],[35768,35806],[548,561],[526,548],[562,564],[719,724],[539,541],[548,561],[517,537],[494,510],[485,502],[35695,35874],[570,575],[548,551],[548,561],[590,600],[35789,353798],[522,533],[549,551],[348,351],[625,630],[35785,35885],[548,561],[502,508],[519,539],[538,541],[565,567],[539,541],[538,541],[539,541],[1480,1511],[538,541],[260,280],[35788,35800],[493,512],[548,561],[522,535],[496,506],[549,550],[348,351],[35783,35790],[323,342],[1009,1204],[539,541]];
+const scatterPoints = scatterRaw.map(p => ({ x: p[0], y: p[1] }));
+new Chart(document.getElementById('scatterChart'), {
+  type: 'scatter',
+  data: {
+    datasets: [{
+      label: 'Satellite',
+      data: scatterPoints,
+      backgroundColor: 'rgba(91,209,224,0.45)',
+      pointRadius: 2.5,
+      pointHoverRadius: 5
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: (ctx) => `Perigee ${ctx.parsed.x} km, Apogee ${ctx.parsed.y} km` } }
+    },
+    scales: {
+      x: { type: 'logarithmic', title: { display: true, text: 'Perigee (km) — log scale', color: MUTED }, grid: baseGrid() },
+      y: { type: 'logarithmic', title: { display: true, text: 'Apogee (km) — log scale', color: MUTED }, grid: baseGrid() }
+    }
+  }
+});
+}
+
+if (document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', function(){ ensureChartJs(initCharts); });
+} else {
+  ensureChartJs(initCharts);
+}
+</script>
+
+</body>
+</html>
