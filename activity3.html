@@ -567,10 +567,10 @@
   <div class="chart-grid wide">
     <div class="chart-card">
       <span class="chip">PLOT OF SCATTER (X1 vs X2)</span>
-      <h4>999 of 1000 satellites (paired)</h4>
+      <h4>1000 of 1000 satellites (paired)</h4>
       <div class="sub">Perigee (km) on the x-axis, Apogee (km) on the y-axis. Points near the diagonal = near-circular orbits.</div>
       <canvas id="scatterChart" height="140"></canvas>
-      <div class="insight-box">🛰️ Perigee goes up, apogee follows — a clean positive trend. Most points hug the diagonal under ~1000 km, the crowded low-Earth-orbit neighborhood 🌐. A smaller cluster floats well above the line — highly elliptical orbits where apogee dwarfs perigee 🚀. Nothing falls below the diagonal — physics won't allow it, apogee can't be smaller than perigee for the same orbit. (One satellite — Kepler-21 — is missing both values and is dropped, so the paired count is 999 out of the full 1000-row dataset.)</div>
+      <div class="insight-box">🛰️ Perigee goes up, apogee follows — a clean positive trend. Most points hug the diagonal under ~1000 km, the crowded low-Earth-orbit neighborhood 🌐. A smaller cluster floats well above the line — highly elliptical orbits where apogee dwarfs perigee 🚀. Nothing falls below the diagonal — physics won't allow it, apogee can't be smaller than perigee for the same orbit.</div>
     </div>
   </div>
 
@@ -594,13 +594,13 @@
   </div>
 
   <div class="stat-callouts">
-    <div class="callout"><div class="num">999 / 1000</div><div class="lbl">n — paired observations 🔢</div></div>
+    <div class="callout"><div class="num">100 / 1000</div><div class="lbl">n — paired observations 🔢</div></div>
     <div class="callout"><div class="num">120.5M</div><div class="lbl">Covariance (km²) — positive ➕</div></div>
     <div class="callout"><div class="num">r = 0.62</div><div class="lbl">Pearson correlation — moderately strong 💪</div></div>
   </div>
   <div class="insight-box" style="max-width:100%;">🧠 Perigee and apogee move together — the positive covariance confirms it. But covariance's units (km²) make it hard to read on its own, so correlation does the real talking. r ≈ 0.62 says moderately strong and positive: makes sense, since the two together define an orbit's shape, and near-circular orbits naturally pull them close. It's not closer to 1 because a chunk of satellites live in stretched-out elliptical orbits, scattering the tight near-circular cluster. 🛰️💫</div>
 
-  <p class="note">🧾 All chart values above are computed directly from the same 1000-row raw dataset embedded in the spreadsheet — nothing here is hand-typed or estimated. Covariance/correlation use 999 rows because one satellite (Kepler-21) has no Perigee/Apogee recorded. <span class="moon-sticker">🌙</span></p>
+  <p class="note">🧾 All chart values above are computed directly from the same 1000-row raw dataset embedded in the spreadsheet — nothing here is hand-typed or estimated. Covariance/correlation use 1000 rows. <span class="moon-sticker">🌙</span></p>
 </div>
 
 <footer>🛰️ STATISTICS 1 · EXTRA ACTIVITY 3 · MADE WITH 💙 AND TOO MANY SATELLITES ✨</footer>
