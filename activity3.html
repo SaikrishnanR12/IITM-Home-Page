@@ -169,7 +169,7 @@
   }
   .planet .clouds{animation:earth-drift 18s linear infinite reverse;transform-origin:50px 50px;}
 
-  /* orbit paths + moving bodies are drawn as one SVG using <animateMotion> along true ellipses */
+  /* orbit path guides + moving bodies (moving bodies positioned by JS each frame, see script) */
   .orbit-svg{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;}
   .blink-light{animation:blink-light 1.3s ease-in-out infinite;}
   @keyframes blink-light{0%,100%{opacity:1;}50%{opacity:0.15;}}
@@ -404,20 +404,18 @@
           </radialGradient>
         </defs>
 
-        <!-- orbit paths -->
+        <!-- orbit path guides (static) -->
         <ellipse cx="140" cy="140" rx="125" ry="58" fill="none" stroke="rgba(232,163,61,0.4)" stroke-width="1" stroke-dasharray="4 4"/>
         <ellipse cx="140" cy="140" rx="98" ry="42" fill="none" stroke="rgba(176,140,232,0.35)" stroke-width="1" stroke-dasharray="3 5" transform="rotate(-18 140 140)"/>
 
-        <!-- moon (slower, tilted inner orbit) -->
-        <g>
+        <!-- moon: position driven by JS every frame, so it can follow the tilted-ellipse guide exactly -->
+        <g id="moonGroup" transform="translate(233.2,109.7)">
           <circle r="6.5" fill="url(#moonGrad)"/>
           <circle r="6.5" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.6"/>
-          <animateMotion dur="15s" repeatCount="indefinite" rotate="0"
-            path="M 42,140 A 98,42 0 1,0 238,140 A 98,42 0 1,0 42,140" transform="rotate(-18 140 140)"/>
         </g>
 
-        <!-- satellite (faster, outer orbit) -->
-        <g>
+        <!-- satellite: position + facing angle both driven by JS, so the dish antenna always points at Earth -->
+        <g id="satGroup" transform="translate(265,140) rotate(90)">
           <g transform="translate(-13,-13)">
             <circle cx="20" cy="12" r="1.6" fill="#FF5D6C" class="blink-light"/>
             <rect x="14" y="13" width="12" height="10" rx="1.5" fill="#E8A33D" stroke="#C97F1F" stroke-width="1"/>
@@ -431,11 +429,10 @@
             <line x1="33" y1="15" x2="33" y2="21" stroke="#1A6B78" stroke-width="0.4"/>
             <line x1="35.5" y1="15" x2="35.5" y2="21" stroke="#1A6B78" stroke-width="0.4"/>
             <line x1="38" y1="15" x2="38" y2="21" stroke="#1A6B78" stroke-width="0.4"/>
+            <!-- antenna points "down" (+90°) in local artwork space — this is what gets aimed at Earth -->
             <line x1="20" y1="23" x2="20" y2="33" stroke="#E9EDF5" stroke-width="1.6"/>
             <circle cx="20" cy="34.5" r="3.2" fill="none" stroke="#E9EDF5" stroke-width="1.6"/>
           </g>
-          <animateMotion dur="8s" repeatCount="indefinite" rotate="0"
-            path="M 265,140 A 125,58 0 1,1 15,140 A 125,58 0 1,1 265,140"/>
         </g>
       </svg>
 
@@ -627,6 +624,44 @@
     frag.appendChild(s);
   }
   field.appendChild(frag);
+})();
+
+// ---------------- orbit motion: satellite + moon driven every frame, so position always matches the drawn ellipse guides and the satellite always faces Earth ----------------
+(function(){
+  var satGroup = document.getElementById('satGroup');
+  var moonGroup = document.getElementById('moonGroup');
+  if (!satGroup || !moonGroup) return;
+
+  var cx = 140, cy = 140;
+  var satRX = 125, satRY = 58, satPeriodMs = 9000;
+  var moonRX = 98, moonRY = 42, moonPeriodMs = 15000, moonTiltDeg = -18, moonDir = -1;
+  var tilt = moonTiltDeg * Math.PI / 180;
+  var cosT = Math.cos(tilt), sinT = Math.sin(tilt);
+  var start = null;
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function frame(now){
+    if (start === null) start = now;
+    var t = now - start;
+
+    // satellite: parametric ellipse, unrotated. Facing angle = true direction back to Earth's centre.
+    var satAngle = (2 * Math.PI) * ((t % satPeriodMs) / satPeriodMs);
+    var sx = cx + satRX * Math.cos(satAngle);
+    var sy = cy + satRY * Math.sin(satAngle);
+    var faceDeg = Math.atan2(cy - sy, cx - sx) * 180 / Math.PI;
+    var satRotate = faceDeg - 90; // artwork's antenna points "down" (+90°) at zero rotation
+    satGroup.setAttribute('transform', 'translate(' + sx.toFixed(2) + ',' + sy.toFixed(2) + ') rotate(' + satRotate.toFixed(2) + ')');
+
+    // moon: same ellipse math as the dashed guide, rotated by the same tilt matrix as its SVG guide
+    var moonAngle = moonDir * (2 * Math.PI) * ((t % moonPeriodMs) / moonPeriodMs);
+    var ex = moonRX * Math.cos(moonAngle), ey = moonRY * Math.sin(moonAngle);
+    var mx = cx + ex * cosT - ey * sinT;
+    var my = cy + ex * sinT + ey * cosT;
+    moonGroup.setAttribute('transform', 'translate(' + mx.toFixed(2) + ',' + my.toFixed(2) + ')');
+
+    if (!reduceMotion) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 })();
 
 // ---------------- scroll-reveal ----------------
