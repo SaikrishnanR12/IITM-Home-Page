@@ -274,7 +274,260 @@
       <p class="form-note">Sent directly to my inbox — I usually read these within a few days.</p>
     </form>
   </section>
+  <!-- =========================================================
+     CONTACT SECTION — paste at the end of your About page
+     Design concept: a handwritten letter / postmarked note.
+     Sends via YOUR OWN Google Apps Script backend
+     (see apps-script-backend.gs + setup steps at the bottom).
+     ========================================================= -->
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<section id="contact" class="letter-wrap">
+  <div class="letter">
+
+    <!-- postmark stamp -->
+    <div class="letter-postmark" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 3"/>
+        <text x="50" y="40" text-anchor="middle" class="postmark-text">SAY</text>
+        <text x="50" y="58" text-anchor="middle" class="postmark-text">HELLO</text>
+        <line x1="14" y1="66" x2="86" y2="66" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <header class="letter-head">
+      <h2 class="letter-title">Write me a note</h2>
+      <p class="letter-sub">No spam, no small talk required — just tell me what's on your mind and I'll write back.</p>
+    </header>
+
+    <form id="contact-form" class="letter-form" novalidate>
+      <div class="line-field">
+        <label for="cf-name">Name</label>
+        <input type="text" id="cf-name" name="name" required autocomplete="name">
+      </div>
+
+      <div class="line-field">
+        <label for="cf-email">Email</label>
+        <input type="email" id="cf-email" name="email" required autocomplete="email">
+      </div>
+
+      <div class="line-field">
+        <label for="cf-subject">Subject</label>
+        <input type="text" id="cf-subject" name="subject" required>
+      </div>
+
+      <div class="line-field area-field">
+        <label for="cf-message">Message</label>
+        <textarea id="cf-message" name="message" rows="5" required></textarea>
+      </div>
+
+      <div class="letter-footer">
+        <p id="cf-status" class="letter-status" role="status"></p>
+        <button type="submit" id="cf-submit-btn" class="seal-btn">
+          <span class="seal-btn-label">Send</span>
+        </button>
+      </div>
+    </form>
+
+  </div>
+</section>
+
+<style>
+  .letter-wrap {
+    --ink: #262220;
+    --paper: #f7f2e7;
+    --paper-line: #d8cdb8;
+    --seal: #8a2e2e;
+    --seal-dark: #6e2222;
+    --muted: #6b6259;
+
+    max-width: 620px;
+    margin: 5rem auto;
+    padding: 0 1.25rem;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+  }
+
+  .letter {
+    position: relative;
+    background: var(--paper);
+    padding: 3rem 2.75rem 2.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 12px 30px -12px rgba(0,0,0,0.25);
+    clip-path: polygon(
+      0% 1.5%, 3% 0%, 9% 1%, 15% 0.2%, 22% 1.2%, 30% 0%, 38% 1%, 46% 0.3%,
+      54% 1.1%, 62% 0.1%, 70% 1%, 78% 0.4%, 86% 1.2%, 93% 0%, 100% 1.4%,
+      100% 100%, 0% 100%
+    );
+  }
+
+  .letter-postmark {
+    position: absolute;
+    top: 1.75rem;
+    right: 1.75rem;
+    width: 84px;
+    height: 84px;
+    color: var(--muted);
+    opacity: 0.75;
+    transform: rotate(8deg);
+  }
+  .postmark-text {
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    fill: currentColor;
+    letter-spacing: 1px;
+  }
+
+  .letter-head { margin-bottom: 2.25rem; padding-right: 70px; }
+  .letter-title {
+    font-family: 'Special Elite', monospace;
+    font-size: 1.65rem;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    margin: 0 0 0.6rem;
+  }
+  .letter-sub {
+    margin: 0;
+    font-size: 0.94rem;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 46ch;
+  }
+
+  .letter-form { display: flex; flex-direction: column; gap: 1.5rem; }
+
+  .line-field { display: flex; flex-direction: column; }
+  .line-field label {
+    font-family: 'Special Elite', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  .line-field input,
+  .line-field textarea {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--paper-line);
+    padding: 0.35rem 0.1rem 0.5rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+  .line-field textarea { resize: vertical; line-height: 1.6; }
+  .line-field input:focus,
+  .line-field textarea:focus { border-color: var(--seal); }
+
+  .letter-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  .letter-status {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+    flex: 1;
+  }
+  .letter-status.success { color: #4c6b3f; }
+  .letter-status.error { color: var(--seal); }
+
+  .seal-btn {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    color: #f3e7cf;
+    font-family: 'Special Elite', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.5px;
+    background:
+      radial-gradient(circle at 35% 30%, rgba(255,255,255,0.25), rgba(255,255,255,0) 40%),
+      radial-gradient(circle at center, var(--seal) 0%, var(--seal-dark) 100%);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3), inset 0 -3px 6px rgba(0,0,0,0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    flex-shrink: 0;
+  }
+  .seal-btn:hover { transform: translateY(-1px); }
+  .seal-btn:active {
+    transform: translateY(1px) scale(0.96);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 -1px 3px rgba(0,0,0,0.25);
+  }
+  .seal-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  .seal-btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+  @media (max-width: 480px) {
+    .letter { padding: 2.25rem 1.5rem 2rem; }
+    .letter-postmark { width: 64px; height: 64px; top: 1.25rem; right: 1.25rem; }
+    .letter-head { padding-right: 50px; }
+    .letter-title { font-size: 1.35rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .seal-btn { transition: none; }
+  }
+</style>
+
+<script>
+  // STEP: paste the Web App URL you get after deploying apps-script-backend.gs
+  const CONTACT_ENDPOINT = "https://script.google.com/macros/s/AKfycbyO-hvBkqfs2oIVw6Bs-Uda3XShxZnONTNb3MgHJArJ2h3pxplig6zPMAtE_qncBS2J/exec";
+
+  const cfForm   = document.getElementById("contact-form");
+  const cfBtn    = document.getElementById("cf-submit-btn");
+  const cfStatus = document.getElementById("cf-status");
+
+  cfForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    cfBtn.disabled = true;
+    cfStatus.textContent = "Sending...";
+    cfStatus.className = "letter-status";
+
+    const payload = {
+      name:    document.getElementById("cf-name").value,
+      email:   document.getElementById("cf-email").value,
+      subject: document.getElementById("cf-subject").value,
+      message: document.getElementById("cf-message").value
+    };
+
+    // Content-type is left as text/plain on purpose — it avoids a CORS
+    // preflight request, which Apps Script Web Apps don't handle. Apps
+    // Script still parses the body fine via JSON.parse(e.postData.contents).
+    fetch(CONTACT_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data.result === "success") {
+          cfStatus.textContent = "Sent. Thanks for writing.";
+          cfStatus.className = "letter-status success";
+          cfForm.reset();
+        } else {
+          throw new Error(data.message || "Unknown error");
+        }
+      })
+      .catch(function (err) {
+        cfStatus.textContent = "Something went wrong — please try again.";
+        cfStatus.className = "letter-status error";
+        console.error(err);
+      })
+      .finally(function () {
+        cfBtn.disabled = false;
+      });
+  });
+</script>
+
+  
 </div>
 
 <footer>
