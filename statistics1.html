@@ -16,24 +16,6 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.7;}
   .mono{font-family:'JetBrains Mono',monospace;}
-  nav{
-    display:flex;justify-content:space-between;align-items:center;
-    max-width:920px;margin:0 auto;padding:24px 32px;
-    border-bottom:1px solid var(--line);
-  }
-  nav .brand{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;}
-  nav .links{display:flex;gap:28px;font-size:14px;position:relative;}
-  nav a{color:var(--muted);text-decoration:none;}
-  nav a.active,nav a:hover{color:var(--teal);}
-  .dropdown{position:relative;}
-  .dropdown-menu{
-    display:none;position:absolute;top:28px;left:0;
-    background:var(--panel);border:1px solid var(--line);border-radius:8px;
-    min-width:150px;padding:6px;z-index:10;
-  }
-  .dropdown:hover .dropdown-menu{display:block;}
-  .dropdown-menu a{display:block;padding:8px 10px;border-radius:6px;font-size:13px;}
-  .dropdown-menu a:hover{background:var(--panel-2);}
   .wrap{max-width:920px;margin:0 auto;padding:60px 32px;}
   .tag{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--teal);}
   h1{font-family:'JetBrains Mono',monospace;font-size:28px;margin:12px 0 16px;}
@@ -90,24 +72,11 @@
     padding:6px 12px;color:var(--muted);
   }
 </style>
+<script src="nav.js" defer></script>
 </head>
 <body>
 
-<nav>
-  <div class="brand mono">MY CSE PORTFOLIO</div>
-  <div class="links">
-    <a href="index.html">Home</a>
-    <div class="dropdown">
-      <a href="statistics1.html" class="active">Statistics 1 ▾</a>
-      <div class="dropdown-menu">
-        <a href="activity1.html">Activity 1</a>
-        <a href="activity2.html">Activity 2</a>
-        <a href="activity3.html">Activity 3</a>
-      </div>
-    </div>
-    <a href="about.html">About</a>
-  </div>
-</nav>
+<div id="site-nav"></div>
 
 <div class="wrap">
   <div class="tag mono">COURSE OVERVIEW</div>
