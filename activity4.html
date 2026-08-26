@@ -30,25 +30,6 @@
   .jersey{font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;}
   .mono{font-family:'JetBrains Mono',monospace;}
 
-  /* ================= NAV (kept identical to rest of site — do not restyle) ================= */
-  nav{
-    display:flex;justify-content:space-between;align-items:center;
-    max-width:960px;margin:0 auto;padding:24px 32px;
-    border-bottom:1px solid var(--line);
-    position:sticky;top:0;z-index:100;
-    background:rgba(11,42,23,0.92);backdrop-filter:blur(8px);
-  }
-  nav .brand{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;letter-spacing:1px;color:var(--gold);}
-  nav .links{display:flex;gap:28px;font-size:14px;position:relative;}
-  nav a{color:var(--muted);text-decoration:none;position:relative;padding-bottom:4px;transition:color .15s;font-family:'Inter',sans-serif;}
-  nav a:hover{color:var(--gold);}
-  nav a.active{color:var(--gold);font-weight:600;}
-  nav a.active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-2));border-radius:2px;}
-  .dropdown{position:relative;}
-  .dropdown-menu{display:none;position:absolute;top:28px;left:0;background:var(--turf-2);border:1px solid var(--line);border-radius:10px;min-width:150px;padding:6px;z-index:10;}
-  .dropdown:hover .dropdown-menu{display:block;}
-  .dropdown-menu a{display:block;padding:8px 10px;border-radius:6px;font-size:13px;}
-  .dropdown-menu a:hover{background:var(--turf-3);}
 
   /* ================= ambient turf texture + crowd noise dots ================= */
   #ambient{position:fixed;inset:0;z-index:0;pointer-events:none;
@@ -269,27 +250,13 @@
   .wb-cell.formula-cell{color:#0F5C2B;font-family:'JetBrains Mono',monospace;font-style:italic;}
   .wb-cell.win1{color:#0F5C2B;font-weight:700;}
 </style>
+<script src="nav.js" defer></script>
 </head>
 <body>
 
 <div id="ambient"></div>
 
-<nav>
-  <div class="brand">MY CSE PORTFOLIO ⚽</div>
-  <div class="links">
-    <a href="index.html">Home</a>
-    <div class="dropdown">
-      <a href="statistics1.html">Statistics 1 ▾</a>
-      <div class="dropdown-menu">
-        <a href="activity1.html">Activity 1</a>
-        <a href="activity2.html">Activity 2</a>
-        <a href="activity3.html">Activity 3</a>
-        <a href="activity4.html" class="active">Activity 4</a>
-      </div>
-    </div>
-    <a href="about.html">About</a>
-  </div>
-</nav>
+<div id="site-nav"></div>
 
 <div class="wrap">
 
