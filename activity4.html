@@ -293,41 +293,6 @@
 
 <div class="wrap">
 
-  <!-- ================= PAGE 00: THE WORKBOOK (shown first) ================= -->
-  <div class="page-marker reveal" style="margin-top:30px;">
-    <span class="num">00</span>
-    <span class="ttl"><span class="eyebrow">Show Your Working, First</span><h2 class="display">The Workbook</h2></span>
-  </div>
-  <p class="lede">Before anything else: the actual spreadsheet behind every number on this page — all 3,040 raw match rows, both batch summaries, and the Calculations sheet with real formulas, not typed-in results. Click any cell to inspect it, exactly like Excel.</p>
-
-  <div class="workbook-shell reveal">
-    <div class="wb-tabs">
-      <button class="wb-tab active" data-tab="raw">📄 Raw Data <span class="wb-count">3,040</span></button>
-      <button class="wb-tab" data-tab="bs10">📊 Batch Summary n=10 <span class="wb-count">304</span></button>
-      <button class="wb-tab" data-tab="bs20">📊 Batch Summary n=20 <span class="wb-count">152</span></button>
-      <button class="wb-tab" data-tab="calc">🧮 Calculations</button>
-    </div>
-    <div class="wb-toolbar">
-      <div class="wb-formula-bar">
-        <span class="fx">fx</span>
-        <span class="wb-cellref" id="wbCellRef">A1</span>
-        <span class="wb-cellval" id="wbCellVal">Click a cell to inspect it</span>
-      </div>
-      <div class="wb-pager" id="wbPager">
-        <button id="wbFirst" title="First page">⏮</button>
-        <button id="wbPrev" title="Previous page">◀</button>
-        <span id="wbPageInfo">Page 1</span>
-        <button id="wbNext" title="Next page">▶</button>
-        <button id="wbLast" title="Last page">⏭</button>
-      </div>
-      <label class="wb-formula-toggle" id="wbFormulaToggleWrap" style="display:none;">
-        <input type="checkbox" id="wbFormulaToggle"> Show formulas
-      </label>
-      <span class="wb-note" id="wbNote"></span>
-    </div>
-    <div class="wb-grid-wrap"><div class="wb-grid" id="wbGrid"></div></div>
-  </div>
-
   <div class="halfway"><div class="circle">⚽</div></div>
 
   <div class="programme-head">
@@ -470,9 +435,47 @@
 
   <div class="halfway"><div class="circle">⚽</div></div>
 
-  <!-- ================= PAGE 01: DATASET ================= -->
-  <div class="page-marker reveal">
+  <!-- ================= PAGE 01: THE WORKBOOK ================= -->
+  <div class="page-marker reveal" >
     <span class="num">01</span>
+    <span class="ttl"><span class="eyebrow">Show Your Working</span><h2 class="display">The Workbook</h2></span>
+  </div>
+  <p class="lede">The actual spreadsheet behind every number on this page — all 3,040 raw match rows, both batch summaries, and the Calculations sheet with real formulas, not typed-in results. Click any cell to inspect it, exactly like Excel.</p>
+
+  <div class="workbook-shell reveal">
+    <div class="wb-tabs">
+      <button class="wb-tab active" data-tab="raw">📄 Raw Data <span class="wb-count">3,040</span></button>
+      <button class="wb-tab" data-tab="bs10">📊 Batch Summary n=10 <span class="wb-count">304</span></button>
+      <button class="wb-tab" data-tab="bs20">📊 Batch Summary n=20 <span class="wb-count">152</span></button>
+      <button class="wb-tab" data-tab="calc">🧮 Calculations</button>
+    </div>
+    <div class="wb-toolbar">
+      <div class="wb-formula-bar">
+        <span class="fx">fx</span>
+        <span class="wb-cellref" id="wbCellRef">A1</span>
+        <span class="wb-cellval" id="wbCellVal">Click a cell to inspect it</span>
+      </div>
+      <div class="wb-pager" id="wbPager">
+        <button id="wbFirst" title="First page">⏮</button>
+        <button id="wbPrev" title="Previous page">◀</button>
+        <span id="wbPageInfo">Page 1</span>
+        <button id="wbNext" title="Next page">▶</button>
+        <button id="wbLast" title="Last page">⏭</button>
+      </div>
+      <label class="wb-formula-toggle" id="wbFormulaToggleWrap" style="display:none;">
+        <input type="checkbox" id="wbFormulaToggle"> Show formulas
+      </label>
+      <span class="wb-note" id="wbNote"></span>
+    </div>
+    <div class="wb-grid-wrap"><div class="wb-grid" id="wbGrid"></div></div>
+  </div>
+
+
+  <div class="halfway"><div class="circle">📂</div></div>
+
+  <!-- ================= PAGE 02: DATASET ================= -->
+  <div class="page-marker reveal">
+    <span class="num">02</span>
     <span class="ttl"><span class="eyebrow">Team Sheet</span><h2 class="display">The Dataset</h2></span>
   </div>
   <p class="lede">
@@ -497,9 +500,9 @@
 
   <div class="halfway"><div class="circle">🎯</div></div>
 
-  <!-- ================= PAGE 02: TACTICS ================= -->
+  <!-- ================= PAGE 03: TACTICS ================= -->
   <div class="page-marker reveal">
-    <span class="num">02</span>
+    <span class="num">03</span>
     <span class="ttl"><span class="eyebrow">Formation</span><h2 class="display">Why Binomial</h2></span>
   </div>
   <div class="tactics-board reveal">
@@ -537,9 +540,9 @@
 
   <div class="halfway"><div class="circle">🔄</div></div>
 
-  <!-- ================= PAGE 03: SUBSTITUTION ================= -->
+  <!-- ================= PAGE 04: SUBSTITUTION ================= -->
   <div class="page-marker reveal">
-    <span class="num">03</span>
+    <span class="num">04</span>
     <span class="ttl"><span class="eyebrow">Bringing on a Sub</span><h2 class="display">Alt. Model: n = 20</h2></span>
   </div>
   <div class="sub-board reveal">
@@ -565,9 +568,9 @@
 
   <div class="halfway"><div class="circle">🏁</div></div>
 
-  <!-- ================= PAGE 04: FULL-TIME ================= -->
+  <!-- ================= PAGE 05: FULL-TIME ================= -->
   <div class="page-marker reveal">
-    <span class="num">04</span>
+    <span class="num">05</span>
     <span class="ttl"><span class="eyebrow">Final Whistle</span><h2 class="display">Comparing the Fits</h2></span>
   </div>
   <p class="lede">A chi-square goodness-of-fit statistic — Σ(observed − expected)² / expected, using batch counts — was computed for each model directly in the spreadsheet.</p>
