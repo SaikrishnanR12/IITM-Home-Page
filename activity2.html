@@ -11,7 +11,7 @@
   :root{
     --bg:#0A0614; --panel:#1B0F2E; --panel-2:#2A1642;
     --text:#F2E9FF; --muted:#A992C4;
-    --magenta:#E85DA0; --cyan:#5BD1E0; --line:#3A2054;
+    --magenta:#E85DA0; --cyan:#5BD1E0; --line:#3A2054; --gold:#E8A33D;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{background:var(--bg);}
@@ -24,29 +24,7 @@
   .mono{font-family:'JetBrains Mono',monospace;}
 
   /* ---------- everything else sits above the background ---------- */
-  nav, .wrap, footer{position:relative;z-index:2;}
-
-  nav{
-    display:flex;justify-content:space-between;align-items:center;
-    max-width:960px;margin:0 auto;padding:24px 32px;
-    border-bottom:1px solid var(--line);
-    position:sticky;top:0;z-index:100;
-    background:rgba(10,6,20,0.9);
-    backdrop-filter:blur(10px);
-  }
-  nav .brand{font-family:'Orbitron',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;color:var(--cyan);}
-  nav .links{display:flex;gap:28px;font-size:14px;position:relative;}
-  nav a{color:var(--muted);text-decoration:none;}
-  nav a.active,nav a:hover{color:var(--magenta);}
-  .dropdown{position:relative;}
-  .dropdown-menu{
-    display:none;position:absolute;top:28px;left:0;
-    background:var(--panel);border:1px solid var(--line);border-radius:10px;
-    min-width:150px;padding:6px;z-index:10;
-  }
-  .dropdown:hover .dropdown-menu{display:block;}
-  .dropdown-menu a{display:block;padding:8px 10px;border-radius:6px;font-size:13px;}
-  .dropdown-menu a:hover{background:var(--panel-2);}
+  .wrap, footer{position:relative;z-index:2;}
 
   .wrap{max-width:960px;margin:0 auto;padding:0 32px;}
   .hero{padding:80px 0 50px;perspective:800px;}
@@ -96,24 +74,11 @@
   footer{max-width:960px;margin:60px auto 0;padding:20px 32px;border-top:1px solid var(--line);
     font-family:'Orbitron',sans-serif;font-size:11px;color:var(--muted);}
 </style>
+<script src="nav.js" defer></script>
 </head>
 <body>
 
-<nav>
-  <div class="brand">MY CSE PORTFOLIO</div>
-  <div class="links">
-    <a href="index.html">Home</a>
-    <div class="dropdown">
-      <a href="statistics1.html">Statistics 1 ▾</a>
-      <div class="dropdown-menu">
-        <a href="activity1.html">Activity 1</a>
-        <a href="activity2.html" class="active">Activity 2</a>
-        <a href="activity3.html">Activity 3</a>
-      </div>
-    </div>
-    <a href="about.html">About</a>
-  </div>
-</nav>
+<div id="site-nav"></div>
 
 <div class="wrap">
   <div class="hero">
