@@ -30,25 +30,6 @@
     min-height:100vh;
   }
   .serif{font-family:'Fraunces',serif;}
-  nav{
-    display:flex;justify-content:space-between;align-items:center;
-    max-width:960px;margin:0 auto;padding:28px 32px 20px;
-  }
-  nav .brand{font-family:'Fraunces',serif;font-weight:600;font-size:17px;letter-spacing:.2px;}
-  nav .links{display:flex;gap:6px;font-size:14px;position:relative;}
-  nav a{color:var(--ink-soft);text-decoration:none;padding:8px 16px;border-radius:999px;transition:background .15s,color .15s;}
-  nav a.active,nav a:hover{color:var(--ink);background:var(--paper);box-shadow:0 1px 2px rgba(61,43,34,.06);}
-  .dropdown{position:relative;display:inline-flex;align-items:center;}
-  .dropdown>a{display:inline-flex;align-items:center;}
-  .dropdown-menu{
-    display:none;position:absolute;top:42px;left:8px;
-    background:var(--paper);border:1px solid var(--line);border-radius:14px;
-    min-width:160px;padding:8px;z-index:10;box-shadow:0 12px 24px rgba(61,43,34,.10);
-  }
-  .dropdown:hover .dropdown-menu{display:block;}
-  .dropdown-menu a{display:block;padding:9px 12px;border-radius:9px;font-size:13px;}
-  .dropdown-menu a:hover{background:var(--cream);}
-
   .wrap{max-width:960px;margin:0 auto;padding:0 32px;}
 
   .hero{padding:64px 0 40px;display:flex;align-items:center;gap:40px;flex-wrap:wrap;}
@@ -142,24 +123,11 @@
     color:var(--ink-soft);font-size:13px;
   }
 </style>
+<script src="nav.js" defer></script>
 </head>
 <body>
 
-<nav>
-  <div class="brand">My CSE Portfolio</div>
-  <div class="links">
-    <a href="index.html" class="active">Home</a>
-    <div class="dropdown">
-      <a href="statistics1.html">Statistics 1 ▾</a>
-      <div class="dropdown-menu">
-        <a href="activity1.html">Activity 1</a>
-        <a href="activity2.html">Activity 2</a>
-        <a href="activity3.html">Activity 3</a>
-      </div>
-    </div>
-    <a href="about.html">About</a>
-  </div>
-</nav>
+<div id="site-nav"></div>
 
 <div class="wrap">
   <div class="hero">
